@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "github.com/Jeg0r13/auth/gen/go;authv1";
+
+
+service Auth {
+  rpc Register (RegisterRequest) returns (RegisterResponse);
+  rpc Login (LoginRequest) returns (LoginResponse);
+  rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
+  rpc IsAdmin (IsAdminRequest) returns (IsAdminResponse);
+  rpc Logout (LogoutRequest) returns (LogoutResponse);
+  rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse);
+}
+
+message RegisterRequest {
+  string email = 1;        // User email (must be unique)
+  string password = 2;     // User password (min 8 chars)
+  string username = 3;     // Display name for the forum
+}
+
+message RegisterResponse {
+  int64 user_id = 1;       // ID of the newly registered user
+}
+
+message LoginRequest {
+  string email = 1;        // User email
+  string password = 2;     // User password
+}
+
+message LoginResponse {
+  string access_token = 1;   // JWT access token (short-lived)
+  string refresh_token = 2;  // JWT refresh token (long-lived)
+  int64 expires_at = 3;      // Unix timestamp when access token expires
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;  // Refresh token to get new access token
+}
+
+message RefreshTokenResponse {
+  string access_token = 1;   // New JWT access token
+  int64 expires_at = 2;      // New expiration time
+}
+
+message IsAdminRequest {
+  int64 user_id = 1;        // User ID to check
+}
+
+message IsAdminResponse {
+  bool is_admin = 1;        // True if user has admin privileges
+}
+
+message LogoutRequest {
+  string refresh_token = 1; // Refresh token to invalidate
+}
+
+message LogoutResponse {
+  bool success = 1;         // True if logout was successful
+}
+
+message ValidateTokenRequest {
+  string access_token = 1;  // Token to validate
+}
+
+message ValidateTokenResponse {
+  int64 user_id = 1;        // ID of authenticated user if token is valid
+  bool is_admin = 2;        // Whether user has admin rights
+}
